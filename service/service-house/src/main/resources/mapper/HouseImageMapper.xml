@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace不能使用别名机制。必须写全限定接口名称。带有包名的。-->
+<mapper namespace="com.shaluy.mapper.HouseImageMapper">
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        select id, house_id, image_name, image_url, type, create_time, update_time, is_deleted
+        from hse_house_image
+	</sql>
+
+    <!--根据房源id和图片类型查询对应图片-->
+    <select id="getHouseImageListByHouseIdAndType" resultType="HouseImage">
+        <include refid="columns"></include>
+        where house_id = #{houseId} and type = #{type} and is_deleted = 0
+    </select>
+
+    <!--保存一个图片-->
+    <insert id="insert">
+        insert into hse_house_image(house_id, image_name, image_url, type)
+                    values(#{houseId}, #{imageName}, #{imageUrl}, #{type})
+    </insert>
+
+    <!--根据id删除一个图片-->
+    <update id="delete">
+        update hse_house_image set is_deleted = 1 where id = #{id}
+    </update>
+
+</mapper>

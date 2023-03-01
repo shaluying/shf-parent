@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace不能使用别名机制。必须写全限定接口名称。带有包名的。-->
+<mapper namespace="com.shaluy.mapper.DictMapper">
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+		select id,parent_id,name,dict_code,create_time,update_time,is_deleted
+	</sql>
+
+    <!--根据id查询该节点下所有的子节点-->
+    <select id="findListByParentId" resultType="Dict">
+        <include refid="columns"></include>
+        from hse_dict where parent_id = #{id} and is_deleted = 0
+    </select>
+
+
+    <!--根据id查询此节点下子节点的数量-->
+    <select id="countChildNodes" resultType="Integer">
+        select count(*) from hse_dict where parent_id = #{id} and is_deleted = 0
+    </select>
+
+
+    <!--根据编码获得一个节点-->
+    <select id="getDictByDictCode" resultType="Dict">
+        <include refid="columns"></include>
+        from hse_dict where dict_code = #{dictCode} and is_deleted = 0;
+    </select>
+
+
+    <!--根据id获得节点的名字-->
+    <select id="getNameById" resultType="String">
+        select name from hse_dict where id = #{id};
+    </select>
+
+
+</mapper>

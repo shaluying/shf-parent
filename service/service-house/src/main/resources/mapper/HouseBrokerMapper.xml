@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace不能使用别名机制。必须写全限定接口名称。带有包名的。-->
+<mapper namespace="com.shaluy.mapper.HouseBrokerMapper">
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        select id, house_id, broker_id, broker_name, broker_head_url, create_time, update_time, is_deleted
+        from hse_house_broker
+	</sql>
+
+    <!--根据房源id查询经纪人信息-->
+    <select id="getHouseBrokerListByHouseId" resultType="HouseBroker">
+        <include refid="columns"></include>
+        where house_id = #{houseId} and is_deleted = 0
+    </select>
+
+    <!--插入一个经纪人-->
+    <insert id="insert">
+        insert into hse_house_broker(house_id, broker_id, broker_name, broker_head_url)
+                values (#{houseId}, #{brokerId}, #{brokerName}, #{brokerHeadUrl})
+    </insert>
+
+    <!--根据id查取经纪人-->
+    <select id="getById" resultType="HouseBroker">
+        <include refid="columns"></include>
+        where id = #{id} and is_deleted = 0
+    </select>
+
+    <!--更新经纪人-->
+    <update id="update">
+        update hse_house_broker
+        <set>
+            <if test="brokerId != null and brokerId != ''">
+                broker_id = #{brokerId},
+            </if>
+            <if test="brokerName != null and brokerName != ''">
+                broker_name = #{brokerName},
+            </if>
+            <if test="brokerHeadUrl != null and brokerHeadUrl != ''">
+                broker_head_url = #{brokerHeadUrl}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--根据id删除经纪人-->
+    <delete id="delete">
+        update hse_house_broker set is_deleted = 1 where id = #{id}
+    </delete>
+
+
+</mapper>

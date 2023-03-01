@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace不能使用别名机制。必须写全限定接口名称。带有包名的。-->
+<mapper namespace="com.shaluy.mapper.UserFollowMapper">
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+		select id, user_id, house_id, create_time, update_time, is_deleted
+		from user_follow
+	</sql>
+
+	<!--保存关注信息-->
+	<insert id="insert">
+		insert into user_follow(user_id, house_id) values(#{userId},#{houseId})
+	</insert>
+
+	<!--判断用户是否关注了房源-->
+	<select id="isUserFollowedHouse" resultType="Integer">
+		select count(id) from user_follow where user_id = #{userId} and house_id = #{houseId} and is_deleted = 0
+	</select>
+
+	<!--根据登录用户id获取关注的房源分页信息-->
+	<select id="getFollowedHouseByUserId" resultType="com.shaluy.vo.UserFollowVo">
+		SELECT uf.id, uf.house_id, uf.create_time, hc.name AS communityName, hh.*
+		FROM hse_house hh
+		LEFT JOIN user_follow uf ON uf.house_id = hh.id
+		LEFT JOIN hse_community hc ON hh.community_id = hc.id
+		WHERE uf.user_id = #{userId} AND hh.is_deleted = 0 AND uf.is_deleted = 0 AND hc.is_deleted = 0
+		order by uf.id  desc
+	</select>
+
+	<!--根据id取消关注-->
+	<update id="cancelFollow">
+		update user_follow set is_deleted = 1 where id = #{id}
+	</update>
+
+</mapper>
